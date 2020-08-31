@@ -29,9 +29,6 @@ public class DemoNavAgent : NavAgent
 
     private void LateUpdate()
     {
-        if (detectionMode == DetectionMode.Raycast)
-        {
-            rayDetection.DrawLinesFrom(drone.Transform);
-        }
+        rayDetection.DrawLinesFrom(drone.Transform);
     }
 }

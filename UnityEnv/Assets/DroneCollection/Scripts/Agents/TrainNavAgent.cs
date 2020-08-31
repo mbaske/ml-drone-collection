@@ -17,14 +17,6 @@ public class TrainNavAgent : NavAgent
         {
             drone = (IDrone)dummyAgent;
         }
-
-        if (detectionMode != DetectionMode.Raycast)
-        {
-            // Camera mode.
-            // Still need RayDetection for penalizing proximity to obtacles.
-            // TBD: Maybe replace with collision detection.
-            rayDetection = new RayDetection();
-        }
     }
 
     public override void AgentReset()

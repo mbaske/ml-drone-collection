@@ -5,14 +5,6 @@ public class NavAgent : DroneAgent
     public Target Target;
     public bool HasReachedTarget => targetDistance < 0.25f;
 
-    protected enum DetectionMode
-    {
-        Raycast = 0,
-        Camera = 1
-    }
-
-    [SerializeField]
-    protected DetectionMode detectionMode;
     protected RayDetection rayDetection;
     protected Camera cam;
 
@@ -30,18 +22,7 @@ public class NavAgent : DroneAgent
     public override void InitializeAgent()
     {
         drone = (IDrone)rotorCtrlAgent;
-
-        if (detectionMode == DetectionMode.Raycast)
-        {
-            rayDetection = new RayDetection();
-        }
-        else
-        {
-            cam = GetComponentInChildren<Camera>();
-            Texture2D tex = new Texture2D(84, 84, TextureFormat.RGB24, false);
-            cam.GetComponent<DepthCam>().Initialize(ref tex);
-            // TODO add tex to agent observations.
-        }
+        rayDetection = new RayDetection();
     }
 
     public override void AgentReset()
@@ -57,16 +38,7 @@ public class NavAgent : DroneAgent
         AddVectorObs(Util.Sigmoid(targetDistance) * 2f - 1f); // 1
         AddVectorObs(NormalizeSpeed(drone.CrntSpeed)); // 1
         AddVectorObs(drone.CrntDir.y); // 1 pitch
-
-        if (detectionMode == DetectionMode.Raycast)
-        {
-            AddVectorObs(rayDetection.CastRays(drone, 10f));
-        }
-        else
-        {
-            cam.transform.position = drone.Transform.position - drone.CrntDir;
-            cam.transform.rotation = Quaternion.LookRotation(drone.CrntDir);
-        }
+        AddVectorObs(rayDetection.CastRays(drone, 10f));
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
